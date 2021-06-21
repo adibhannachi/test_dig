@@ -1,0 +1,48 @@
+
+@startuml
+Vector <|-- DataList
+
+
+class SendingModule {
+ +SendingModule()
+ ~SendingModule()
+ - DataList
+ - ReciverHandler
+ - SendingHandler
+}
+
+
+note left: - DataList est un membre\n privé protegé par std::mutex\nles deux class SendingHandler & \nRecieverHandler sont lancés\n comme threads 
+
+class ReciverHandler {
+ -m_fd
+ +ReciverHandler()
+ +ReciverHandler(DataList&)
+}
+note left: - RecieverHandler lire les \ndonnées de socket et  faire\n un push_back à Datalist 
+
+class SendingHandler {
+ -m_fd
+ +SendingHandler()
+ +SendingHandler(DataList&)
+}
+note left: - SendingHandler lire les données de\n Datalist , faire un pop_backet\n et envoie les données dans\n le socket d'envoie 
+
+class DataList {
+ +DataList()
+ +DataList(DataList&)
+ +DataList()
+ +push_back()
+ +pop_back()
+ + emplace_back() delete
+ -save()
+ -read()
+}
+
+note left: - la fonction push_back(); fait appel \n à la fonction mère push_back de \n vector et la fonction save() qui va \n souvegarder la liste des objets \n dans la Base de données \n - pareil pour pop_back() \n - emplace_back : Cette foncton a été supprimé\n, l'idée est de limité le CRUD\nà les deux fonctions push_back\n & pop_back() afin de garenti\nl'enregistrement dans le disque
+
+
+SendingModule o-- DataList : aggregation
+SendingModule o-- ReciverHandler : aggregation
+SendingModule o-- SendingHandler : aggregation
+@enduml
